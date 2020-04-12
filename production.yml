@@ -1,0 +1,56 @@
+version: '3'
+
+volumes:
+  static:
+  database:
+  esdata:
+
+services:
+  hellodjango_blog_tutorial:
+    build:
+      context: .
+      dockerfile: compose/production/django/Dockerfile
+    image: hellodjango_blog_tutorial
+    container_name: hellodjango_blog_tutorial
+    working_dir: /app
+    volumes:
+      - database:/app/database
+      - static:/app/static
+    env_file:
+      - .envs/.production
+    ports:
+      - "8000:8000"
+    command: /start.sh
+
+  nginx:
+    build:
+      context: .
+      dockerfile: compose/production/nginx/Dockerfile
+    image: hellodjango_blog_tutorial_nginx
+    container_name: hellodjango_blog_tutorial_nginx
+    volumes:
+      - static:/apps/hellodjango_blog_tutorial/static
+    ports:
+      - "80:80"
+      - "443:443"
+
+  elasticsearch:
+    build:
+      context: .
+      dockerfile: ./compose/production/elasticsearch/Dockerfile
+    image: hellodjango_blog_tutorial_elasticsearch
+    container_name: hellodjango_blog_tutorial_elasticsearch
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nproc: 65536
+      nofile:
+        soft: 65536
+        hard: 65536
