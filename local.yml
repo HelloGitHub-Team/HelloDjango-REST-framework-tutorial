@@ -5,12 +5,12 @@ volumes:
   esdata_local:
 
 services:
-  hellodjango_blog_tutorial_local:
+  hellodjango.rest.framework.tutorial.local:
     build:
       context: .
       dockerfile: ./compose/local/Dockerfile
-    image: hellodjango_blog_tutorial_local
-    container_name: hellodjango_blog_tutorial_local
+    image: hellodjango_rest_framework_tutorial_local
+    container_name: hellodjango_rest_framework_tutorial_local
     working_dir: /app
     volumes:
       - database_local:/app/database
@@ -19,14 +19,14 @@ services:
       - "8000:8000"
     command: /start.sh
     depends_on:
-      - elasticsearch_local
+      - elasticsearch.local
 
-  elasticsearch_local:
+  elasticsearch.local:
     build:
       context: .
       dockerfile: ./compose/production/elasticsearch/Dockerfile
-    image: hellodjango_blog_tutorial_elasticsearch_local
-    container_name: hellodjango_blog_tutorial_elasticsearch_local
+    image: hellodjango_rest_framework_tutorial_elasticsearch_local
+    container_name: hellodjango_rest_framework_tutorial_elasticsearch_local
     volumes:
       - esdata_local:/usr/share/elasticsearch/data
     ports:
