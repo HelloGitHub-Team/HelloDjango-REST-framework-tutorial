@@ -27,15 +27,169 @@ master 分支为项目的主分支，每一步关键功能的开发都对应一�
 
 ## 本地运行
 
-Comming soon~
+可以使用 Virtualenv、Pipenv、Docker 等在本地运行项目，每种方式都只需运行简单的几条命令就可以了。
 
-### 线上部署
+> **注意：**
+>
+> 因为博客全文搜索功能依赖 Elasticsearch 服务，如果使用 Virtualenv 或者 Pipenv 启动项目而不想搭建 Elasticsearch 服务的话，请先设置环境变量 `ENABLE_HAYSTACK_REALTIME_SIGNAL_PROCESSOR=no` 以关闭实时索引，否则无法创建博客文章。如果关闭实时索引，全文搜索功能将不可用。
+>
+> Windows 设置环境变量的方式：`set ENABLE_HAYSTACK_REALTIME_SIGNAL_PROCESSOR=no`
+>
+> Linux 或者 macOS：`export ENABLE_HAYSTACK_REALTIME_SIGNAL_PROCESSOR=no`
+>
+> 使用 Docker 启动则无需设置，因为会自动启动一个包含 Elasticsearch 服务的 Docker 容器。
 
-Comming soon~
+无论采用何种方式，先克隆代码到本地：
+
+```bash
+$ git clone https://github.com/HelloGitHub-Team/HelloDjango-REST-framework-tutorial.git
+```
+
+### Virtualenv
+
+1. 创建虚拟环境并**激活虚拟环境**，具体方法可参考基础教程中的：[开始进入 django 开发之旅：使用虚拟环境](https://www.zmrenwu.com/courses/hellodjango-blog-tutorial/materials/59/#%E4%BD%BF%E7%94%A8%E8%99%9A%E6%8B%9F%E7%8E%AF%E5%A2%83)
+
+2. 安装项目依赖
+
+   ```bash
+   $ cd HelloDjango-rest-framework-tutorial
+   $ pip install -r requirements.txt
+   ```
+
+3. 迁移数据库
+
+   ```bash
+   $ python manage.py migrate
+   ```
+
+4. 创建后台管理员账户
+
+   ```bash
+   $ python manage.py createsuperuser
+   ```
+
+   具体请参阅基础教程中的 [创作后台开启，请开始你的表演](https://www.zmrenwu.com/courses/hellodjango-blog-tutorial/materials/65/)。
+
+5. 运行开发服务器
+
+   ```bash
+   $ python manage.py runserver
+   ```
+
+6. 浏览器访问 http://127.0.0.1:8000/admin，使用第 4 步创建的管理员账户登录后台发布文章，如何发布文章可参考基础教程中的：[创作后台开启，请开始你的表演](https://www.zmrenwu.com/courses/hellodjango-blog-tutorial/materials/65/)。
+
+   或者执行 fake 脚本批量生成测试数据：
+
+   ```bash
+   $ python -m scripts.fake
+   ```
+
+   > 批量脚本会清除全部已有数据，包括第 4 步创建的后台管理员账户。脚本会再默认生成一个管理员账户，用户名和密码都是 admin。
+
+9. 浏览器访问：http://127.0.0.1:8000，可进入到博客首页
+
+### Pipenv
+
+1. 安装 Pipenv（已安装可跳过）
+
+    ```bash
+    $ pip install pipenv
+    ```
+
+2. 安装项目依赖
+
+    ```bash
+    $ cd HelloDjango-rest-framework-tutorial
+    $ pipenv install --dev
+    ```
+
+    关于如何使用 Pipenv，参阅基础教程中：[开始进入 django 开发之旅](https://www.zmrenwu.com/courses/hellodjango-blog-tutorial/materials/59/) 的 Pipenv 创建和管理虚拟环境部分。
+
+3. 迁移数据库
+
+    在项目根目录运行如下命令迁移数据库：
+    ```bash
+    $ pipenv run python manage.py migrate
+    ```
+
+4. 创建后台管理员账户
+
+   在项目根目录运行如下命令创建后台管理员账户
+   
+   ```bash
+   $ pipenv run python manage.py createsuperuser
+   ```
+
+   具体请参阅基础教程中的 [创作后台开启，请开始你的表演](https://www.zmrenwu.com/courses/hellodjango-blog-tutorial/materials/65/)。
+
+5. 运行开发服务器
+
+   在项目根目录运行如下命令开启开发服务器：
+
+   ```bash
+   $ pipenv run python manage.py runserver
+   ```
+
+6. 浏览器访问 http://127.0.0.1:8000/admin，使用第 4 步创建的管理员账户登录后台发布文章，如何发布文章可参考基础教程中的：[创作后台开启，请开始你的表演](https://www.zmrenwu.com/courses/hellodjango-blog-tutorial/materials/65/)。
+
+   或者执行 fake 脚本批量生成测试数据：
+
+   ```bash
+   $ pipenv run python -m scripts.fake
+   ```
+
+   > 批量脚本会清除全部已有数据，包括第 4 步创建的后台管理员账户。脚本会再默认生成一个管理员账户，用户名和密码都是 admin。
+
+7. 在浏览器访问：http://127.0.0.1:8000/，可进入到博客首页。
+
+### Docker
+
+1. 安装 Docker 和 Docker Compose
+
+3. 构建和启动容器
+
+   ```bash
+   $ docker-compose -f local.yml build
+   $ docker-compose -f local.yml up
+   ```
+
+4. 创建后台管理员账户
+
+   ```bash
+   $ docker exec -it hellodjango_rest_framework_tutorial_local python manage.py createsuperuser
+   ```
+
+   其中 hellodjango_rest_framework_tutorial_local 为项目预定义容器名。
+
+4. 浏览器访问 http://127.0.0.1:8000/admin，使用第 3 步创建的管理员账户登录后台发布文章，如何发布文章可参考基础教程中的：[创作后台开启，请开始你的表演](https://www.zmrenwu.com/courses/hellodjango-blog-tutorial/materials/65/)。
+
+   或者执行 fake 脚本批量生成测试数据：
+
+   ```bash
+   $ docker exec -it hellodjango_rest_framework_tutorial_local python -m scripts.fake
+   ```
+
+   >  批量脚本会清除全部已有数据，包括第 3 步创建的后台管理员账户。脚本会再默认生成一个管理员账户，用户名和密码都是 admin。
+
+5. 为 fake 脚本生成的博客文章创建索引，这样就可以使用 Elasticsearch 服务搜索文章
+
+   ```bash
+   $ docker exec -it hellodjango_rest_framework_tutorial_local python manage.py rebuild_index
+   ```
+
+   > 通过 admin 后台添加的文章会自动创建索引。
+
+6. 在浏览器访问：http://127.0.0.1:8000/，可进入到博客首页。
+
+## 线上部署
+
+拼命撰写中...
 
 ## 教程目录索引
 
 1. [开篇](https://www.zmrenwu.com/courses/django-rest-framework-tutorial/)
+2. [django-rest-framework 是什么鬼？](https://www.zmrenwu.com/courses/django-rest-framework-tutorial/materials/91/)
+3. [初始化 RESTful API 风格的博客系统](https://www.zmrenwu.com/courses/django-rest-framework-tutorial/materials/92/)
 
 ## 公众号
 <p align="center">

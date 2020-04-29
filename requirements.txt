@@ -7,3 +7,5 @@ faker
 django-pure-pagination
 elasticsearch>=2,<3
 django-haystack
+djangorestframework
+django-filter
