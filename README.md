@@ -190,6 +190,7 @@ $ git clone https://github.com/HelloGitHub-Team/HelloDjango-REST-framework-tutor
 1. [开篇](https://www.zmrenwu.com/courses/django-rest-framework-tutorial/)
 2. [django-rest-framework 是什么鬼？](https://www.zmrenwu.com/courses/django-rest-framework-tutorial/materials/91/)
 3. [初始化 RESTful API 风格的博客系统](https://www.zmrenwu.com/courses/django-rest-framework-tutorial/materials/92/)
+4. [实现博客首页文章列表 API](https://www.zmrenwu.com/courses/django-rest-framework-tutorial/materials/92/)
 
 ## 公众号
 <p align="center">
