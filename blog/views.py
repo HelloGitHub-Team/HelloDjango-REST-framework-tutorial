@@ -4,6 +4,9 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import DetailView, ListView
 from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.generics import ListAPIView
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from pure_pagination.mixins import PaginationMixin
@@ -64,8 +67,8 @@ class PostDetailView(DetailView):
         return response
 
 
-@api_view(http_method_names=["GET"])
-def index(request):
-    post_list = Post.objects.all().order_by("-created_time")
-    serializer = PostListSerializer(post_list, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)
+class IndexPostListAPIView(ListAPIView):
+    serializer_class = PostListSerializer
+    queryset = Post.objects.all()
+    pagination_class = PageNumberPagination
+    permission_classes = [AllowAny]

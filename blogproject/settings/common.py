@@ -131,3 +131,9 @@ if enable in {"true", "True", "yes"}:
 HAYSTACK_CUSTOM_HIGHLIGHTER = "blog.utils.Highlighter"
 # HAYSTACK_DEFAULT_OPERATOR = 'AND'
 # HAYSTACK_FUZZY_MIN_SIM = 0.1
+
+# django-rest-framework
+# ------------------------------------------------------------------------------
+REST_FRAMEWORK = {
+    "PAGE_SIZE": 10,
+}
