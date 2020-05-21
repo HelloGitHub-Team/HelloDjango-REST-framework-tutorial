@@ -192,6 +192,7 @@ $ git clone https://github.com/HelloGitHub-Team/HelloDjango-REST-framework-tutor
 3. [初始化 RESTful API 风格的博客系统](https://www.zmrenwu.com/courses/django-rest-framework-tutorial/materials/92/)
 4. [实现博客首页文章列表 API](https://www.zmrenwu.com/courses/django-rest-framework-tutorial/materials/93/)
 5. [用类视图实现首页 API](https://www.zmrenwu.com/courses/django-rest-framework-tutorial/materials/94/)
+6. [使用视图集简化代码](https://www.zmrenwu.com/courses/django-rest-framework-tutorial/materials/95/)
 
 ## 公众号
 <p align="center">

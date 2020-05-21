@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import DetailView, ListView
-from rest_framework import status
+from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
@@ -72,3 +72,12 @@ class IndexPostListAPIView(ListAPIView):
     queryset = Post.objects.all()
     pagination_class = PageNumberPagination
     permission_classes = [AllowAny]
+
+
+class PostViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = PostListSerializer
+    queryset = Post.objects.all()
+    permission_classes = [AllowAny]
+
+
+index = PostViewSet.as_view({"get": "list"})
