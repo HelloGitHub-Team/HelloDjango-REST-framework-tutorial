@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from pure_pagination.mixins import PaginationMixin
 
 from .models import Category, Post, Tag
-from .serializers import PostListSerializer
+from .serializers import PostListSerializer, PostRetrieveSerializer
 
 
 class IndexView(PaginationMixin, ListView):
@@ -74,10 +74,21 @@ class IndexPostListAPIView(ListAPIView):
     permission_classes = [AllowAny]
 
 
-class PostViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+class PostViewSet(
+    mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet
+):
     serializer_class = PostListSerializer
     queryset = Post.objects.all()
     permission_classes = [AllowAny]
+    serializer_class_table = {
+        "list": PostListSerializer,
+        "retrieve": PostRetrieveSerializer,
+    }
+
+    def get_serializer_class(self):
+        return self.serializer_class_table.get(
+            self.action, super().get_serializer_class()
+        )
 
 
 index = PostViewSet.as_view({"get": "list"})
