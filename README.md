@@ -195,6 +195,7 @@ $ git clone https://github.com/HelloGitHub-Team/HelloDjango-REST-framework-tutor
 6. [使用视图集简化代码](https://www.zmrenwu.com/courses/django-rest-framework-tutorial/materials/95/)
 7. [分页](https://www.zmrenwu.com/courses/django-rest-framework-tutorial/materials/96/)
 8. [文章详情 API](https://www.zmrenwu.com/courses/django-rest-framework-tutorial/materials/97/)
+9. [在接口返回Markdown解析后的内容](https://www.zmrenwu.com/courses/django-rest-framework-tutorial/materials/98/)
 
 ## 公众号
 <p align="center">

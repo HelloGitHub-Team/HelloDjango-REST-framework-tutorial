@@ -52,6 +52,8 @@ class PostRetrieveSerializer(serializers.ModelSerializer):
     category = CategorySerializer()
     author = UserSerializer()
     tags = TagSerializer(many=True)
+    toc = serializers.CharField()
+    body_html = serializers.CharField()
 
     class Meta:
         model = Post
@@ -66,4 +68,6 @@ class PostRetrieveSerializer(serializers.ModelSerializer):
             "category",
             "author",
             "tags",
+            "toc",
+            "body_html",
         ]
