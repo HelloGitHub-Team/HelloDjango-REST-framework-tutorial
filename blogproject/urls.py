@@ -22,6 +22,8 @@ import blog.views
 
 router = routers.DefaultRouter()
 router.register(r"posts", blog.views.PostViewSet, basename="post")
+router.register(r"categories", blog.views.CategoryViewSet, basename="category")
+router.register(r"tags", blog.views.TagViewSet, basename="tag")
 
 urlpatterns = [
     path("admin/", admin.site.urls),

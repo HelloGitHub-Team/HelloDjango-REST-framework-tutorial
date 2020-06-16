@@ -1,18 +1,25 @@
-from django.contrib import messages
-from django.db.models import Q
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView, ListView
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins, status, viewsets
-from rest_framework.decorators import api_view
+from rest_framework.decorators import action
 from rest_framework.generics import ListAPIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.serializers import DateField
+from rest_framework.views import APIView
 
 from pure_pagination.mixins import PaginationMixin
 
+from .filters import PostFilter
 from .models import Category, Post, Tag
-from .serializers import PostListSerializer, PostRetrieveSerializer
+from .serializers import (
+    CategorySerializer,
+    PostListSerializer,
+    PostRetrieveSerializer,
+    TagSerializer,
+)
 
 
 class IndexView(PaginationMixin, ListView):
@@ -84,11 +91,40 @@ class PostViewSet(
         "list": PostListSerializer,
         "retrieve": PostRetrieveSerializer,
     }
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = PostFilter
 
     def get_serializer_class(self):
         return self.serializer_class_table.get(
             self.action, super().get_serializer_class()
         )
 
+    @action(
+        methods=["GET"], detail=False, url_path="archive/dates", url_name="archive-date"
+    )
+    def list_archive_dates(self, request, *args, **kwargs):
+        dates = Post.objects.dates("created_time", "month", order="DESC")
+        date_field = DateField()
+        data = [date_field.to_representation(date) for date in dates]
+        return Response(data=data, status=status.HTTP_200_OK)
+
 
 index = PostViewSet.as_view({"get": "list"})
+
+
+class CategoryViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = CategorySerializer
+    # 关闭分页
+    pagination_class = None
+
+    def get_queryset(self):
+        return Category.objects.all().order_by("name")
+
+
+class TagViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    serializer_class = TagSerializer
+    # 关闭分页
+    pagination_class = None
+
+    def get_queryset(self):
+        return Tag.objects.all().order_by("name")
