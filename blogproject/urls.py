@@ -17,13 +17,15 @@ from django.contrib import admin
 from django.urls import include, path
 from rest_framework import routers
 
-from blog.feeds import AllPostsRssFeed
 import blog.views
+import comments.views
+from blog.feeds import AllPostsRssFeed
 
 router = routers.DefaultRouter()
 router.register(r"posts", blog.views.PostViewSet, basename="post")
 router.register(r"categories", blog.views.CategoryViewSet, basename="category")
 router.register(r"tags", blog.views.TagViewSet, basename="tag")
+router.register(r"comments", comments.views.CommentViewSet, basename="comment")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
