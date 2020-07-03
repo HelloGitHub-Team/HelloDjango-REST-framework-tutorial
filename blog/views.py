@@ -11,12 +11,15 @@ from rest_framework.serializers import DateField
 from rest_framework.views import APIView
 
 from comments.serializers import CommentSerializer
+from drf_haystack.viewsets import HaystackViewSet
 from pure_pagination.mixins import PaginationMixin
 
 from .filters import PostFilter
 from .models import Category, Post, Tag
+from .search_indexes import PostIndex
 from .serializers import (
     CategorySerializer,
+    PostHaystackSerializer,
     PostListSerializer,
     PostRetrieveSerializer,
     TagSerializer,
@@ -149,3 +152,8 @@ class TagViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def get_queryset(self):
         return Tag.objects.all().order_by("name")
+
+
+class PostSearchView(HaystackViewSet):
+    index_models = [Post]
+    serializer_class = PostHaystackSerializer

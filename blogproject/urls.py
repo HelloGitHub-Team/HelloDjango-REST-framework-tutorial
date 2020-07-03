@@ -26,6 +26,7 @@ router.register(r"posts", blog.views.PostViewSet, basename="post")
 router.register(r"categories", blog.views.CategoryViewSet, basename="category")
 router.register(r"tags", blog.views.TagViewSet, basename="tag")
 router.register(r"comments", comments.views.CommentViewSet, basename="comment")
+router.register(r"search", blog.views.PostSearchView, basename="search")
 
 urlpatterns = [
     path("admin/", admin.site.urls),

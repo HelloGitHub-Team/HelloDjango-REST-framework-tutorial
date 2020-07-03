@@ -17,6 +17,7 @@ elasticsearch = ">=2,<3"
 django-haystack = "*"
 djangorestframework = "*"
 django-filter = "*"
+drf-haystack = "*"
 
 [requires]
 python_version = "3"
