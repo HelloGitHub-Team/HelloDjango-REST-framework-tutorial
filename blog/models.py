@@ -1,8 +1,11 @@
 import re
+from datetime import datetime
 
 import markdown
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.db import models
+from django.db.models.signals import post_delete, post_save
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -148,3 +151,11 @@ class Post(models.Model):
     @cached_property
     def rich_content(self):
         return generate_rich_content(self.body)
+
+
+def change_post_updated_at(sender=None, instance=None, *args, **kwargs):
+    cache.set("post_updated_at", datetime.utcnow())
+
+
+post_save.connect(receiver=change_post_updated_at, sender=Post)
+post_delete.connect(receiver=change_post_updated_at, sender=Post)

@@ -1,4 +1,9 @@
+from datetime import datetime
+
+from django.core.cache import cache
 from django.utils.html import strip_tags
+from rest_framework_extensions.key_constructor.bits import KeyBitBase
+
 from haystack.utils import Highlighter as HaystackHighlighter
 
 
@@ -14,3 +19,14 @@ class Highlighter(HaystackHighlighter):
         if len(text_block) < self.max_length:
             start_offset = 0
         return self.render_html(highlight_locations, start_offset, end_offset)
+
+
+class UpdatedAtKeyBit(KeyBitBase):
+    key = "updated_at"
+
+    def get_data(self, **kwargs):
+        value = cache.get(self.key, None)
+        if not value:
+            value = datetime.utcnow()
+            cache.set(self.key, value=value)
+        return str(value)

@@ -8,7 +8,13 @@ from rest_framework.pagination import LimitOffsetPagination, PageNumberPaginatio
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.serializers import DateField
-from rest_framework.views import APIView
+from rest_framework_extensions.cache.decorators import cache_response
+from rest_framework_extensions.key_constructor.bits import (
+    ListSqlQueryKeyBit,
+    PaginationKeyBit,
+    RetrieveSqlQueryKeyBit,
+)
+from rest_framework_extensions.key_constructor.constructors import DefaultKeyConstructor
 
 from comments.serializers import CommentSerializer
 from drf_haystack.viewsets import HaystackViewSet
@@ -16,7 +22,6 @@ from pure_pagination.mixins import PaginationMixin
 
 from .filters import PostFilter
 from .models import Category, Post, Tag
-from .search_indexes import PostIndex
 from .serializers import (
     CategorySerializer,
     PostHaystackSerializer,
@@ -24,6 +29,7 @@ from .serializers import (
     PostRetrieveSerializer,
     TagSerializer,
 )
+from .utils import UpdatedAtKeyBit
 
 
 class IndexView(PaginationMixin, ListView):
@@ -78,6 +84,36 @@ class PostDetailView(DetailView):
         return response
 
 
+# ---------------------------------------------------------------------------
+#   Django REST framework 接口
+# ---------------------------------------------------------------------------
+
+
+class PostUpdatedAtKeyBit(UpdatedAtKeyBit):
+    key = "post_updated_at"
+
+
+class CommentUpdatedAtKeyBit(UpdatedAtKeyBit):
+    key = "comment_updated_at"
+
+
+class PostListKeyConstructor(DefaultKeyConstructor):
+    list_sql = ListSqlQueryKeyBit()
+    pagination = PaginationKeyBit()
+    updated_at = PostUpdatedAtKeyBit()
+
+
+class PostObjectKeyConstructor(DefaultKeyConstructor):
+    retrieve_sql = RetrieveSqlQueryKeyBit()
+    updated_at = PostUpdatedAtKeyBit()
+
+
+class CommentListKeyConstructor(DefaultKeyConstructor):
+    list_sql = ListSqlQueryKeyBit()
+    pagination = PaginationKeyBit()
+    updated_at = CommentUpdatedAtKeyBit()
+
+
 class IndexPostListAPIView(ListAPIView):
     serializer_class = PostListSerializer
     queryset = Post.objects.all()
@@ -103,6 +139,14 @@ class PostViewSet(
             self.action, super().get_serializer_class()
         )
 
+    @cache_response(timeout=5 * 60, key_func=PostListKeyConstructor())
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @cache_response(timeout=5 * 60, key_func=PostObjectKeyConstructor())
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
     @action(
         methods=["GET"], detail=False, url_path="archive/dates", url_name="archive-date"
     )
@@ -112,6 +156,7 @@ class PostViewSet(
         data = [date_field.to_representation(date) for date in dates]
         return Response(data=data, status=status.HTTP_200_OK)
 
+    @cache_response(timeout=5 * 60, key_func=CommentListKeyConstructor())
     @action(
         methods=["GET"],
         detail=True,

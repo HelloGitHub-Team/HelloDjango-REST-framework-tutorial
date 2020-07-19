@@ -199,6 +199,7 @@ $ git clone https://github.com/HelloGitHub-Team/HelloDjango-REST-framework-tutor
 10. [实现分类、标签、归档日期接口](https://www.zmrenwu.com/courses/django-rest-framework-tutorial/materials/99/)
 11. [评论接口](https://www.zmrenwu.com/courses/django-rest-framework-tutorial/materials/100/))
 12. [基于 drf-haystack 实现文章搜索接口](https://www.zmrenwu.com/courses/django-rest-framework-tutorial/materials/101/))
+13. [加缓存为接口提速](https://www.zmrenwu.com/courses/django-rest-framework-tutorial/materials/102/))
 
 ## 公众号
 <p align="center">

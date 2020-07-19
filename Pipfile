@@ -18,6 +18,8 @@ django-haystack = "*"
 djangorestframework = "*"
 django-filter = "*"
 drf-haystack = "*"
+drf-extensions = "*"
+django-redis-cache = "*"
 
 [requires]
 python_version = "3"

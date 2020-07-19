@@ -6,7 +6,7 @@ COPY ./compose/production/nginx/sources.list /etc/apt/
 RUN apt-get update && apt-get install -y --allow-unauthenticated certbot python-certbot-nginx
 
 RUN rm /etc/nginx/conf.d/default.conf
-COPY ./compose/production/nginx/hellodjango-blog-tutorial.conf /etc/nginx/conf.d/hellodjango-blog-tutorial.conf
+COPY ./compose/production/nginx/hellodjango-rest-framework-tutorial.conf /etc/nginx/conf.d/hellodjango-rest-framework-tutorial.conf
 
 
 
