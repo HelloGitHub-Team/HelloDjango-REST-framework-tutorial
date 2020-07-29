@@ -141,4 +141,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     # 这个选项控制分页后每页的资源个数
     "PAGE_SIZE": 10,
+    # API 版本控制
+    "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.NamespaceVersioning",
+    "DEFAULT_VERSION": "v1",
 }

@@ -202,3 +202,18 @@ class TagViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 class PostSearchView(HaystackViewSet):
     index_models = [Post]
     serializer_class = PostHaystackSerializer
+
+
+class ApiVersionTestViewSet(viewsets.ViewSet):
+    @action(
+        methods=["GET"], detail=False, url_path="test", url_name="test",
+    )
+    def test(self, request, *args, **kwargs):
+        if request.version == "v1":
+            return Response(
+                data={
+                    "version": request.version,
+                    "warning": "该接口的 v1 版本已废弃，请尽快迁移至 v2 版本",
+                }
+            )
+        return Response(data={"version": request.version})

@@ -27,14 +27,19 @@ router.register(r"categories", blog.views.CategoryViewSet, basename="category")
 router.register(r"tags", blog.views.TagViewSet, basename="tag")
 router.register(r"comments", comments.views.CommentViewSet, basename="comment")
 router.register(r"search", blog.views.PostSearchView, basename="search")
+# 仅用于 API 版本管理测试
+router.register(
+    r"api-version", blog.views.ApiVersionTestViewSet, basename="api-version"
+)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("search/", include("haystack.urls")),
     path("", include("blog.urls")),
     path("", include("comments.urls")),
-    path("api/", include(router.urls)),
-    path("api/auth/", include("rest_framework.urls", namespace="rest_framework")),
     # 记得在顶部引入 AllPostsRssFeed
     path("all/rss/", AllPostsRssFeed(), name="rss"),
+    path("api/v1/", include((router.urls, "api"), namespace="v1")),
+    path("api/v2/", include((router.urls, "api"), namespace="v2")),
+    path("api/auth/", include("rest_framework.urls", namespace="rest_framework")),
 ]
