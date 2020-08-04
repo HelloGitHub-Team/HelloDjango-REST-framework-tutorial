@@ -8,6 +8,7 @@ from rest_framework.pagination import LimitOffsetPagination, PageNumberPaginatio
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.serializers import DateField
+from rest_framework.throttling import AnonRateThrottle
 from rest_framework_extensions.cache.decorators import cache_response
 from rest_framework_extensions.key_constructor.bits import (
     ListSqlQueryKeyBit,
@@ -199,9 +200,14 @@ class TagViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return Tag.objects.all().order_by("name")
 
 
+class PostSearchAnonRateThrottle(AnonRateThrottle):
+    THROTTLE_RATES = {"anon": "5/min"}
+
+
 class PostSearchView(HaystackViewSet):
     index_models = [Post]
     serializer_class = PostHaystackSerializer
+    throttle_classes = [PostSearchAnonRateThrottle]
 
 
 class ApiVersionTestViewSet(viewsets.ViewSet):
