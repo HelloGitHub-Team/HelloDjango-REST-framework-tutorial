@@ -202,6 +202,7 @@ $ git clone https://github.com/HelloGitHub-Team/HelloDjango-REST-framework-tutor
 13. [加缓存为接口提速](https://www.zmrenwu.com/courses/django-rest-framework-tutorial/materials/102/))
 14. [API 版本管理](https://www.zmrenwu.com/courses/django-rest-framework-tutorial/materials/103/))
 15. [限制接口访问频率](https://www.zmrenwu.com/courses/django-rest-framework-tutorial/materials/104/))
+16. [单元测试](https://www.zmrenwu.com/courses/django-rest-framework-tutorial/materials/105/))
 
 ## 公众号
 <p align="center">

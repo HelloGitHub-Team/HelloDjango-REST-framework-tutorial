@@ -2,14 +2,9 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.fields import CharField
 
-from drf_haystack.serializers import (
-    HaystackSerializer,
-    HaystackSerializerMixin,
-    HighlighterMixin,
-)
+from drf_haystack.serializers import HaystackSerializerMixin
 
 from .models import Category, Post, Tag
-from .search_indexes import PostIndex
 from .utils import Highlighter
 
 

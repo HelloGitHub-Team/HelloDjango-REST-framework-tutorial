@@ -154,7 +154,7 @@ class PostViewSet(
     def list_archive_dates(self, request, *args, **kwargs):
         dates = Post.objects.dates("created_time", "month", order="DESC")
         date_field = DateField()
-        data = [date_field.to_representation(date) for date in dates]
+        data = [date_field.to_representation(date)[:7] for date in dates]
         return Response(data=data, status=status.HTTP_200_OK)
 
     @cache_response(timeout=5 * 60, key_func=CommentListKeyConstructor())
@@ -210,7 +210,7 @@ class PostSearchView(HaystackViewSet):
     throttle_classes = [PostSearchAnonRateThrottle]
 
 
-class ApiVersionTestViewSet(viewsets.ViewSet):
+class ApiVersionTestViewSet(viewsets.ViewSet):  # pragma: no cover
     @action(
         methods=["GET"], detail=False, url_path="test", url_name="test",
     )

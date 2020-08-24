@@ -1,8 +1,12 @@
-from django.test import TestCase
-from ..utils import Highlighter
+import unittest
+from datetime import datetime
+
+from django.core.cache import cache
+
+from ..utils import Highlighter, UpdatedAtKeyBit
 
 
-class HighlighterTestCase(TestCase):
+class HighlighterTestCase(unittest.TestCase):
     def test_highlight(self):
         document = "这是一个比较长的标题，用于测试关键词高亮但不被截断。"
         highlighter = Highlighter("标题")
@@ -20,3 +24,18 @@ class HighlighterTestCase(TestCase):
                 '...<span class="highlighted">标题</span>，应该被截断。'
             )
         )
+
+
+class UpdatedAtKeyBitTestCase(unittest.TestCase):
+    def test_get_data(self):
+        # 未缓存的情况
+        key_bit = UpdatedAtKeyBit()
+        data = key_bit.get_data()
+        self.assertEqual(data, str(cache.get(key_bit.key)))
+
+        # 已缓存的情况
+        cache.clear()
+        now = datetime.utcnow()
+        now_str = str(now)
+        cache.set(key_bit.key, now)
+        self.assertEqual(key_bit.get_data(), now_str)

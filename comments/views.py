@@ -55,5 +55,5 @@ def comment(request, post_pk):
 class CommentViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     serializer_class = CommentSerializer
 
-    def get_queryset(self):
+    def get_queryset(self):  # pragma: no cover
         return Comment.objects.all()
