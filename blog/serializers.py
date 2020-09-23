@@ -1,8 +1,7 @@
 from django.contrib.auth.models import User
+from drf_haystack.serializers import HaystackSerializerMixin
 from rest_framework import serializers
 from rest_framework.fields import CharField
-
-from drf_haystack.serializers import HaystackSerializerMixin
 
 from .models import Category, Post, Tag
 from .utils import Highlighter
@@ -56,8 +55,10 @@ class PostRetrieveSerializer(serializers.ModelSerializer):
     category = CategorySerializer()
     author = UserSerializer()
     tags = TagSerializer(many=True)
-    toc = serializers.CharField()
-    body_html = serializers.CharField()
+    toc = serializers.CharField(label="文章目录", help_text="HTML 格式，每个目录条目均由 li 标签包裹。")
+    body_html = serializers.CharField(
+        label="文章内容", help_text="HTML 格式，从 `body` 字段解析而来。"
+    )
 
     class Meta:
         model = Post
@@ -87,8 +88,14 @@ class HighlightedCharField(CharField):
 
 
 class PostHaystackSerializer(HaystackSerializerMixin, PostListSerializer):
-    title = HighlightedCharField()
-    summary = HighlightedCharField(source="body")
+    title = HighlightedCharField(
+        label="标题", help_text="标题中包含的关键词已由 HTML 标签包裹，并添加了 class，前端可设置相应的样式来高亮关键。"
+    )
+    summary = HighlightedCharField(
+        source="body",
+        label="摘要",
+        help_text="摘要中包含的关键词已由 HTML 标签包裹，并添加了 class，前端可设置相应的样式来高亮关键。",
+    )
 
     class Meta(PostListSerializer.Meta):
         search_fields = ["text"]

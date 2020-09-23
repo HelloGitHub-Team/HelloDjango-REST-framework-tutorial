@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "pure_pagination",  # 分页
     "haystack",  # 搜索
+    "drf_yasg",  # 文档
     "rest_framework",
     "django_filters",
     "blog.apps.BlogConfig",  # 注册 blog 应用

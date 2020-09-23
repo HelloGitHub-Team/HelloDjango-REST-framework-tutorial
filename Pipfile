@@ -20,6 +20,7 @@ django-filter = "*"
 drf-haystack = "*"
 drf-extensions = "*"
 django-redis-cache = "*"
+drf-yasg = "*"
 
 [requires]
 python_version = "3"

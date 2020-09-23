@@ -53,6 +53,13 @@ def comment(request, post_pk):
 
 
 class CommentViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    """
+    博客评论视图集
+
+    create:
+    创建博客评论
+    """
+
     serializer_class = CommentSerializer
 
     def get_queryset(self):  # pragma: no cover

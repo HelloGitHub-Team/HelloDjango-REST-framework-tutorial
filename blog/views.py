@@ -1,6 +1,12 @@
 from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
 from django.views.generic import DetailView, ListView
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_haystack.viewsets import HaystackViewSet
+from drf_yasg import openapi
+from drf_yasg.inspectors import FilterInspector
+from drf_yasg.utils import swagger_auto_schema
+from pure_pagination.mixins import PaginationMixin
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import ListAPIView
@@ -10,26 +16,15 @@ from rest_framework.response import Response
 from rest_framework.serializers import DateField
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework_extensions.cache.decorators import cache_response
-from rest_framework_extensions.key_constructor.bits import (
-    ListSqlQueryKeyBit,
-    PaginationKeyBit,
-    RetrieveSqlQueryKeyBit,
-)
+from rest_framework_extensions.key_constructor.bits import ListSqlQueryKeyBit, PaginationKeyBit, RetrieveSqlQueryKeyBit
 from rest_framework_extensions.key_constructor.constructors import DefaultKeyConstructor
 
 from comments.serializers import CommentSerializer
-from drf_haystack.viewsets import HaystackViewSet
-from pure_pagination.mixins import PaginationMixin
 
 from .filters import PostFilter
 from .models import Category, Post, Tag
 from .serializers import (
-    CategorySerializer,
-    PostHaystackSerializer,
-    PostListSerializer,
-    PostRetrieveSerializer,
-    TagSerializer,
-)
+    CategorySerializer, PostHaystackSerializer, PostListSerializer, PostRetrieveSerializer, TagSerializer)
 from .utils import UpdatedAtKeyBit
 
 
@@ -125,6 +120,22 @@ class IndexPostListAPIView(ListAPIView):
 class PostViewSet(
     mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet
 ):
+    """
+    博客文章视图集
+
+    list:
+    返回博客文章列表
+
+    retrieve:
+    返回博客文章详情
+
+    list_comments:
+    返回博客文章下的评论列表
+
+    list_archive_dates:
+    返回博客文章归档日期列表
+    """
+
     serializer_class = PostListSerializer
     queryset = Post.objects.all()
     permission_classes = [AllowAny]
@@ -148,8 +159,14 @@ class PostViewSet(
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
 
+    @swagger_auto_schema(responses={200: "归档日期列表，时间倒序排列。例如：['2020-08', '2020-06']。"})
     @action(
-        methods=["GET"], detail=False, url_path="archive/dates", url_name="archive-date"
+        methods=["GET"],
+        detail=False,
+        url_path="archive/dates",
+        url_name="archive-date",
+        filter_backends=None,
+        pagination_class=None,
     )
     def list_archive_dates(self, request, *args, **kwargs):
         dates = Post.objects.dates("created_time", "month", order="DESC")
@@ -163,6 +180,8 @@ class PostViewSet(
         detail=True,
         url_path="comments",
         url_name="comment",
+        filter_backends=None,  # 移除从 PostViewSet 自动继承的 filter_backends，这样 drf-yasg 就不会生成过滤参数
+        suffix="List",  # 将这个 action 返回的结果标记为列表，否则 drf-yasg 会根据 detail=True 将结果误判为单个对象
         pagination_class=LimitOffsetPagination,
         serializer_class=CommentSerializer,
     )
@@ -183,6 +202,13 @@ index = PostViewSet.as_view({"get": "list"})
 
 
 class CategoryViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+    博客文章分类视图集
+
+    list:
+    返回博客文章分类列表
+    """
+
     serializer_class = CategorySerializer
     # 关闭分页
     pagination_class = None
@@ -192,6 +218,13 @@ class CategoryViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 
 class TagViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+    博客文章标签视图集
+
+    list:
+    返回博客文章标签列表
+    """
+
     serializer_class = TagSerializer
     # 关闭分页
     pagination_class = None
@@ -204,15 +237,53 @@ class PostSearchAnonRateThrottle(AnonRateThrottle):
     THROTTLE_RATES = {"anon": "5/min"}
 
 
+class PostSearchFilterInspector(FilterInspector):
+    def get_filter_parameters(self, filter_backend):
+        return [
+            openapi.Parameter(
+                name="text",
+                in_=openapi.IN_QUERY,
+                required=True,
+                description="搜索关键词",
+                type=openapi.TYPE_STRING,
+            )
+        ]
+
+
+@method_decorator(
+    name="retrieve",
+    decorator=swagger_auto_schema(
+        auto_schema=None,
+    ),
+)
+# @method_decorator(
+#     name="list",
+#     decorator=swagger_auto_schema(
+#         operation_description="返回关键词搜索结果",
+#         filter_inspectors=[PostSearchFilterInspector],
+#     ),
+# )
 class PostSearchView(HaystackViewSet):
+    """
+    搜索视图集
+
+    list:
+    返回搜索结果列表
+    """
+
     index_models = [Post]
     serializer_class = PostHaystackSerializer
     throttle_classes = [PostSearchAnonRateThrottle]
 
 
 class ApiVersionTestViewSet(viewsets.ViewSet):  # pragma: no cover
+    swagger_schema = None
+
     @action(
-        methods=["GET"], detail=False, url_path="test", url_name="test",
+        methods=["GET"],
+        detail=False,
+        url_path="test",
+        url_name="test",
     )
     def test(self, request, *args, **kwargs):
         if request.version == "v1":
